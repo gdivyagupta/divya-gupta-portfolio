@@ -1,1 +1,31 @@
 document.getElementById('year').textContent = new Date().getFullYear();
+
+const systemData={
+  apify:{title:'apify',copy:'lead sourcing is the first step. the system is configured around a defined client profile, so the agent does not silently invent a target market.',question:'product boundary: what counts as a qualified lead?'},
+  sheets:{title:'google sheets',copy:'the sheet acts as persistent state. existing records are checked before new leads enter the workflow, reducing duplicate outreach across runs.',question:'reliability question: what state must survive between runs?'},
+  gemini:{title:'gemini',copy:'the language model handles personalization after targeting and deduplication. this keeps the model focused on a bounded task instead of asking it to decide the entire strategy.',question:'evaluation question: how do we know generated outreach is actually relevant?'},
+  gmail:{title:'gmail',copy:'email creation is separated from sending. the workflow can prepare drafts without automatically creating an external consequence.',question:'governance boundary: when does an agent need explicit authorization?'},
+  actions:{title:'github actions',copy:'scheduled execution turns the local workflow into a repeatable system. configuration and authorization gates remain part of the run.',question:'operations question: what should happen when a scheduled run partially fails?'}
+};
+document.querySelectorAll('.system-node').forEach(node=>node.addEventListener('click',()=>{document.querySelectorAll('.system-node').forEach(n=>n.classList.remove('active'));node.classList.add('active');const d=systemData[node.dataset.node];document.getElementById('system-title').textContent=d.title;document.getElementById('system-copy').textContent=d.copy;document.getElementById('system-question').textContent=d.question;}));
+
+document.querySelectorAll('.card-toggle').forEach(btn=>btn.addEventListener('click',()=>{const card=btn.closest('.project-card');const expanded=card.classList.toggle('expanded');btn.setAttribute('aria-expanded',expanded);}));
+
+const decisionData={
+ email:{automate:['automate','the system can prepare outreach, but fully automatic sending creates an external consequence that is difficult to reverse.','speed · scale · external impact'],assist:['assist','generate and stage the emails, then let a human review the batch before sending.','speed · oversight · reversibility'],approve:['require approval','sending creates an external consequence. the system can prepare the work, but authorization should remain explicit.','reliability · reversibility · external impact']},
+ classify:{automate:['automate','only if the product belongs to a validated vertical with deterministic rules and sufficient evidence.','speed · consistency · known scope'],assist:['assist','let the system propose a classification, but surface uncertainty and supporting evidence for review.','coverage · uncertainty · review cost'],approve:['require approval','unknown categories should not silently fall through to a convenient default. flag them for a controlled decision.','uncertainty · downstream impact · auditability']},
+ research:{automate:['automate','routine retrieval can be automated when the source and evidence requirements are known.','speed · repeatability · bounded scope'],assist:['assist','the system should collect evidence and expose source limitations before a conclusion is produced.','provenance · ambiguity · human judgment'],approve:['require approval','high-stakes conclusions should require explicit review when evidence is incomplete, inaccessible or contradictory.','evidence quality · consequence · traceability']}
+};
+let currentAction='email';let currentLevel='approve';
+function renderDecision(){const d=decisionData[currentAction][currentLevel];document.getElementById('decision-title').textContent=d[0];document.getElementById('decision-copy').textContent=d[1];document.getElementById('decision-tradeoff').textContent=d[2];document.querySelectorAll('.authority-scale button').forEach(b=>b.classList.toggle('selected',b.dataset.level===currentLevel));}
+document.querySelectorAll('.decision-action').forEach(btn=>btn.addEventListener('click',()=>{document.querySelectorAll('.decision-action').forEach(b=>b.classList.remove('active'));btn.classList.add('active');currentAction=btn.dataset.action;renderDecision();}));
+document.querySelectorAll('.authority-scale button').forEach(btn=>btn.addEventListener('click',()=>{currentLevel=btn.dataset.level;renderDecision();}));
+renderDecision();
+
+const archiveData={
+ power:{label:'field note 01',title:'technology & power',copy:'research and writing about surveillance, technology, political power, algorithmic systems and their effects on society.',fragment:'systems do not exist outside institutions. who controls the system shapes what the system can become.'},
+ mind:{label:'field note 02',title:'philosophy of mind',copy:'consciousness, computationalism, representation, cognition and the question of what it means for a system to have a mind.',fragment:'if intelligence can be implemented, what exactly are we saying about the thing that implements it?'},
+ literacy:{label:'field note 03',title:'teaching & ai literacy',copy:'teaching kids about ai, computing and ethical technology, and thinking about how technical literacy should begin early.',fragment:'technical literacy is also social literacy: people need to understand the systems that increasingly make decisions around them.'},
+ language:{label:'field note 04',title:'french & violin',copy:'learning and teaching french, and playing violin as a creative practice outside technical work.',fragment:'languages and music are different kinds of systems. both reward attention to structure, pattern and interpretation.'}
+};
+document.querySelectorAll('.archive-tab').forEach(btn=>btn.addEventListener('click',()=>{document.querySelectorAll('.archive-tab').forEach(b=>b.classList.remove('active'));btn.classList.add('active');const d=archiveData[btn.dataset.topic];document.getElementById('archive-label').textContent=d.label;document.getElementById('archive-title').textContent=d.title;document.getElementById('archive-copy').textContent=d.copy;document.getElementById('archive-fragment').textContent=d.fragment;}));
